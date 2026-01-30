@@ -1,0 +1,25 @@
+From d0f556ef92c63ba510db57b82c36ade6de908b10 Mon Sep 17 00:00:00 2001
+From: bivsk <bivsk@tutanota.com>
+Date: Sat, 17 Jan 2026 01:03:24 -0500
+Subject: [PATCH] unable to find .git
+
+---
+ common/src/build/application.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/common/src/build/application.rs b/common/src/build/application.rs
+index 913b2f9b8..81631fd3b 100644
+--- a/common/src/build/application.rs
++++ b/common/src/build/application.rs
+@@ -111,7 +111,7 @@ fn find_git_root() -> Result<PathBuf, anyhow::Error> {
+     let mut path = PathBuf::from(manifest);
+ 
+     let mut loop_count = 0;
+-    while !path.join(".git").exists() {
++    while !path.join(".github").exists() {
+         path = path.join("..");
+         if loop_count == 10 {
+             return Err(anyhow::anyhow!(
+-- 
+2.52.0
+

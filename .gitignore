@@ -5,14 +5,17 @@
 # flake
 !flake.lock
 !flake.nix
+!*.nix
 
 # main modules
 !p2poolix/
 !p2poolix/**/
 !pkgs/
 
+# package patches
+!*.patch
+
 # direnv
 !.envrc
 
 !README.md
-!*.nix
