@@ -15,18 +15,6 @@ in
     (mkAliasOptionModule [ "p2poolix" "xmrig" "package" ] [ "services" "xmrig" "package" ])
   ];
 
-  # options.p2poolix.xmrig = {
-  #   settings = mkOption {
-  #     type = json.type;
-  #     default = { };
-  #     description = ''
-  #       XMRig configuration. Refer to
-  #       <https://xmrig.com/docs/miner/config>
-  #       for details on supported values.
-  #     '';
-  #   };
-  # };
-
   config = mkIf cfg.enable {
     services.xmrig = {
       enable = true;

@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib;
@@ -10,41 +9,58 @@ let
   p2poolix = config.p2poolix;
 in
 {
-  options.p2poolix.monero = {
-    settings = lib.mkOption {
-      inherit (configFormat) type;
-      default = { };
-      description = ''
-        Configuration included in monero base node `config.toml`.
-      '';
-    };
+  # re-use options from nixos monero module
+  imports = [
+    (mkAliasOptionModule [ "p2poolix" "monero" "dataDir" ] [ "services" "monero" "dataDir" ])
+    (mkAliasOptionModule [ "p2poolix" "monero" "banlist" ] [ "services" "monero" "banlist" ])
+    (mkAliasOptionModule [ "p2poolix" "monero" "extraConfig" ] [ "services" "monero" "extraConfig" ])
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "environmentFile" ]
+      [ "services" "monero" "environmentFile" ]
+    )
+    (mkAliasOptionModule [ "p2poolix" "monero" "prune" ] [ "services" "monero" "prune" ])
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "priorityNodes" ]
+      [ "services" "monero" "priorityNodes" ]
+    )
+    (mkAliasOptionModule [ "p2poolix" "monero" "extraNodes" ] [ "services" "monero" "extraNodes" ])
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "exclusiveNodes" ]
+      [ "services" "monero" "exclusiveNodes" ]
+    )
+    (mkAliasOptionModule [ "p2poolix" "monero" "rpc" "user" ] [ "services" "monero" "rpc" "user" ])
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "rpc" "password" ]
+      [ "services" "monero" "rpc" "password" ]
+    )
+    (mkAliasOptionModule [ "p2poolix" "monero" "rpc" "port" ] [ "services" "monero" "rpc" "port" ])
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "rpc" "restricted" ]
+      [ "services" "monero" "rpc" "restricted" ]
+    )
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "rpc" "address" ]
+      [ "services" "monero" "rpc" "address" ]
+    )
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "limits" "upload" ]
+      [ "services" "monero" "limits" "upload" ]
+    )
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "limits" "threads" ]
+      [ "services" "monero" "limits" "threads" ]
+    )
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "limits" "syncSize" ]
+      [ "services" "monero" "limits" "syncSize" ]
+    )
+    (mkAliasOptionModule
+      [ "p2poolix" "monero" "limits" "download" ]
+      [ "services" "monero" "limits" "download" ]
+    )
+  ];
 
-    environmentFile = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-      example = "/var/lib/monero/monero.env";
-      description = ''
-        Path to an EnvironmentFile for the monero service as defined in {manpage}`systemd.exec(5)`.
-
-        Secrets may be passed to the service by specifying placeholder variables in the Nix config
-        and setting values in the environment file.
-
-        Example:
-
-        ```
-        # In environment file:
-        MINING_ADDRESS=888tNkZrPN6JsEgekjMnABU4TBzc2Dt29EPAvkRxbANsAnjyPbb3iQ1YBRk1UXcdRsiKc9dhwMVgN5S9cQUiyoogDavup3H
-        ```
-
-        ```
-        # Service config
-        services.monero.mining.address = "$MINING_ADDRESS";
-        ```
-      '';
-    };
-  };
-
-  config = lib.mkIf p2poolix.monero.enable {
+  config = mkIf cfg.enable {
     services.monero = {
       enable = true;
     };
