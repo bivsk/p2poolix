@@ -4,10 +4,16 @@
   pkgs,
   ...
 }:
-with lib;
 let
+  inherit (lib)
+    mkIf
+    mkOption
+    types
+    ;
+
   cfg = config.p2poolix.p2pool;
   p2poolix = config.p2poolix;
+  xmrAddress = p2poolix.monero.address;
 in
 {
   options.p2poolix.p2pool = {
@@ -25,7 +31,7 @@ in
     };
   };
 
-  config = lib.mkIf p2poolix.p2pool.enable {
+  config = mkIf cfg.enable {
     users.users.p2pool = {
       isSystemUser = true;
       group = "p2pool";
@@ -45,7 +51,7 @@ in
         User = "p2pool";
         Group = "p2pool";
         # EnvironmentFile = lib.mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
-        ExecStart = "${pkgs.p2pool}/bin/p2pool --mini --wallet 55LTR8KniP4LQGJSPtbYDacR7dz8RBFnsfAKMaMuwUNYX6aQbBcovzDPyrQF9KXF9tVU6Xk3K8no1BywnJX6GvZX8yJsXvt";
+        ExecStart = "${pkgs.p2pool}/bin/p2pool --mini --wallet ${xmrAddress}";
         Restart = "always";
       };
     };

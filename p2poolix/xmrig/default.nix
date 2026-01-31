@@ -4,8 +4,12 @@
   pkgs,
   ...
 }:
-with lib;
 let
+  inherit (lib)
+    mkAliasOptionModule
+    mkIf
+    ;
+
   cfg = config.p2poolix.xmrig;
   p2poolix = config.p2poolix;
 in

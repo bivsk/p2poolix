@@ -6,6 +6,13 @@ flakeSelf:
   ...
 }:
 let
+  inherit (lib)
+    mkDefault
+    mkIf
+    mkOption
+    types
+    ;
+
   cfg = config.p2poolix.tari;
   p2poolix = config.p2poolix;
 
@@ -16,7 +23,7 @@ let
 in
 {
   options.p2poolix.tari = {
-    settings = lib.mkOption {
+    settings = mkOption {
       inherit (configFormat) type;
       default = { };
       description = ''
@@ -24,8 +31,8 @@ in
       '';
     };
 
-    environmentFile = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
+    environmentFile = mkOption {
+      type = types.nullOr types.path;
       default = null;
       example = "/var/lib/tari/tari.env";
       description = ''
@@ -49,10 +56,10 @@ in
     };
   };
 
-  config = lib.mkIf p2poolix.tari.enable {
+  config = mkIf p2poolix.tari.enable {
     p2poolix.tari.settings = {
       common.base_path = "/var/lib/tari";
-      base_node.grpc_address = lib.mkDefault "/ip4/127.0.0.1/tcp/18142";
+      base_node.grpc_address = mkDefault "/ip4/127.0.0.1/tcp/18142";
     };
 
     users.users.tari = {
@@ -73,7 +80,7 @@ in
       serviceConfig = {
         User = "tari";
         Group = "tari";
-        EnvironmentFile = lib.mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
+        EnvironmentFile = mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
         ExecStart = "${tariPkg}/bin/minotari_node --base-path ${cfg.settings.common.base_path} --config ${configFile} --non-interactive-mode --network mainnet --disable-splash-screen";
         Restart = "always";
       };

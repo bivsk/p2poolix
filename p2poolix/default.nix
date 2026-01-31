@@ -5,8 +5,13 @@ flakeSelf:
   pkgs,
   ...
 }:
-with lib;
 let
+  inherit (lib)
+    mkIf
+    mkOption
+    types
+    ;
+
   cfg = config.p2poolix;
 in
 {
@@ -39,6 +44,17 @@ in
         example = true;
         description = ''
           Whether or not to enable the Monero node.
+        '';
+      };
+
+      # TODO: use alias? p2poolix.monero.address -> services.monero.address
+      # need to be able to easily reference from submodules
+      address = mkOption {
+        type = types.str;
+        default = "888tNkZrPN6JsEgekjMnABU4TBzc2Dt29EPAvkRxbANsAnjyPbb3iQ1YBRk1UXcdRsiKc9dhwMVgN5S9cQUiyoogDavup3H"; # donation address
+        example = "888tNkZrPN6JsEgekjMnABU4TBzc2Dt29EPAvkRxbANsAnjyPbb3iQ1YBRk1UXcdRsiKc9dhwMVgN5S9cQUiyoogDavup3H";
+        description = ''
+          Monero address where to send mining rewards.
         '';
       };
     };

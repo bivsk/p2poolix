@@ -3,8 +3,12 @@
   lib,
   ...
 }:
-with lib;
 let
+  inherit (lib)
+    mkAliasOptionModule
+    mkIf
+    ;
+
   cfg = config.p2poolix.monero;
   p2poolix = config.p2poolix;
 in
