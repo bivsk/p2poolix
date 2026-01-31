@@ -14,6 +14,7 @@ in
     (import ./tari flakeSelf)
     ./monero
     ./xmrig
+    ./p2pool
   ];
 
   options.p2poolix = {
