@@ -29,46 +29,60 @@ in
       '';
     };
 
-    mining = {
-      enable = mkEnableOption "Enable mining via p2pool";
+    monero = {
+      enable = mkOption {
+        type = types.bool;
+        default = cfg.enable;
+        example = true;
+        description = ''
+          Whether or not to enable the Monero node.
+        '';
+      };
+    };
 
-      p2pool = {
-        enable = mkEnableOption "Enable p2pool";
+    tari = {
+      enable = mkOption {
+        type = types.bool;
+        default = cfg.enable;
+        example = true;
+        description = ''
+          Whether or not to enable the Tari node.
+        '';
+      };
+    };
 
-        chain = mkOption {
-          type = types.enum [
-            "main"
-            "mini"
-            "nano"
-          ];
-          default = "main";
-          example = "mini";
-          description = ''
-            Desired p2pool chain to mine on.
-          '';
-        };
+    p2pool = {
+      enable = mkOption {
+        type = types.bool;
+        default = cfg.enable;
+        example = true;
+        description = ''
+          Whether or not to enable the Tari node.
+        '';
       };
 
-      mergeMining = {
-        enable = mkEnableOption "Enable merge mining";
+      chain = mkOption {
+        type = types.enum [
+          "main"
+          "mini"
+          "nano"
+        ];
+        default = "main";
+        example = "mini";
+        description = ''
+          Desired p2pool chain to mine on.
+        '';
+      };
+    };
 
-        chain = mkOption {
-          type = types.enum [ "tari" ];
-          default = "tari";
-          example = "tari";
-          description = ''
-            Desired chain to merge mine.
-          '';
-        };
-
-        address = mkOption {
-          type = types.nullOr types.str;
-          default = null;
-          example = "t1...";
-          description = ''
-            Payment address for merge mined rewards.
-          '';
-        };
+    mining = {
+      enable = mkOption {
+        type = types.bool;
+        default = config.p2poolix.enable;
+        example = true;
+        description = ''
+          Whether or not to enable mining.
+        '';
       };
     };
   };

@@ -6,7 +6,7 @@ flakeSelf:
   ...
 }:
 let
-  cfg = config.p2poolnix.tari;
+  cfg = config.p2poolix.tari;
   p2poolix = config.p2poolix;
 
   tariPkg = flakeSelf.packages.${pkgs.system}.tari;
@@ -16,8 +16,6 @@ let
 in
 {
   options.p2poolix.tari = {
-    enable = lib.mkEnableOption "Tari base node";
-
     settings = lib.mkOption {
       inherit (configFormat) type;
       default = { };
@@ -51,8 +49,7 @@ in
     };
   };
 
-  config = lib.mkIf p2poolix.mining.mergeMining.enable {
-    # TODO: only if tari is mm coin
+  config = lib.mkIf p2poolix.tari.enable {
     p2poolix.tari.settings = {
       common.base_path = "/var/lib/tari";
       base_node.grpc_address = lib.mkDefault "/ip4/127.0.0.1/tcp/18142";
