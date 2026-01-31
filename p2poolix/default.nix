@@ -12,6 +12,7 @@ in
 {
   imports = [
     (import ./tari flakeSelf)
+    ./monero
   ];
 
   options.p2poolix = {
@@ -61,18 +62,6 @@ in
         '';
       };
 
-      chain = mkOption {
-        type = types.enum [
-          "main"
-          "mini"
-          "nano"
-        ];
-        default = "main";
-        example = "mini";
-        description = ''
-          Desired p2pool chain to mine on.
-        '';
-      };
     };
 
     mining = {
