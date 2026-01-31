@@ -6,6 +6,7 @@
 }:
 let
   inherit (lib)
+    cli
     mkIf
     mkOption
     types
@@ -14,6 +15,15 @@ let
   cfg = config.p2poolix.p2pool;
   p2poolix = config.p2poolix;
   xmrAddress = p2poolix.monero.address;
+
+  # P2Pool does not use a config file.
+  # Specify configuration via CLI args.
+  p2pArgs = cli.toCommandLineShell { } {
+    ${cfg.chain} = (cfg.chain != "main");
+    wallet = xmrAddress;
+  };
+  # optional --merge-mine tari/addr
+  # optional --host
 in
 {
   options.p2poolix.p2pool = {
@@ -51,7 +61,7 @@ in
         User = "p2pool";
         Group = "p2pool";
         # EnvironmentFile = lib.mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
-        ExecStart = "${pkgs.p2pool}/bin/p2pool --mini --wallet ${xmrAddress}";
+        ExecStart = "${pkgs.p2pool}/bin/p2pool ${p2pArgs}";
         Restart = "always";
       };
     };
