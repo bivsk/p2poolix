@@ -13,6 +13,7 @@ in
   imports = [
     (import ./tari flakeSelf)
     ./monero
+    ./xmrig
   ];
 
   options.p2poolix = {
@@ -64,7 +65,7 @@ in
 
     };
 
-    mining = {
+    xmrig = {
       enable = mkOption {
         type = types.bool;
         default = config.p2poolix.enable;
