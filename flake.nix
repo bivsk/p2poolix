@@ -46,5 +46,7 @@
           };
         }
       );
+
+      formatter = forEachSupportedSystem ({ pkgs }: pkgs.nixfmt-tree);
     };
 }
