@@ -18,7 +18,13 @@ let
 
   # P2Pool does not use a config file.
   # Specify configuration via CLI args.
-  p2pArgs = cli.toCommandLineShell { } {
+  p2pArgs = cli.toCommandLineShell 
+  (optionName: {
+    option = "--${optionName}";
+    sep = null;
+    explicitBool = false;
+  })
+  {
     ${cfg.chain} = (cfg.chain != "main");
     wallet = xmrAddress;
   };
