@@ -5,6 +5,7 @@
 }:
 let
   inherit (lib)
+    mkAfter
     mkAliasOptionModule
     mkIf
     ;
@@ -65,8 +66,16 @@ in
   ];
 
   config = mkIf cfg.enable {
-    services.monero = {
-      enable = true;
-    };
+    services.monero.enable = true;
+
+    # TODO: create option for p2pool ipaddr
+    # and in/out peers
+    services.monero.extraConfig =
+      mkIf config.p2poolix.p2pool.enable
+        (mkAfter ''
+          zmq-pub=tcp://127.0.0.1:18083
+	  out-peers=12
+	  in-peers=48
+        '');
   };
 }
