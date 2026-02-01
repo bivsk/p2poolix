@@ -25,6 +25,7 @@ let
     explicitBool = false;
   })
   {
+    host = p2poolix.monero.rpc.address;
     ${cfg.chain} = (cfg.chain != "main");
     wallet = xmrAddress;
   };
