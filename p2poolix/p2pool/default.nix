@@ -29,12 +29,36 @@ let
         host = p2poolix.monero.rpc.address;
         ${cfg.chain} = (cfg.chain != "main");
         wallet = xmrAddress;
+        p2p = "${cfg.address}:${toString cfg.port}";
       };
   # optional --merge-mine tari/addr
-  # optional --host
 in
 {
   options.p2poolix.p2pool = {
+    openFirewall = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Open ports in firewall for p2pool.
+      '';
+    };
+
+    address = mkOption {
+      type = types.str;
+      default = "127.0.0.1";
+      description = ''
+        Address for p2pool to listen on.
+      '';
+    };
+
+    port = mkOption {
+      type = types.int;
+      default = 3333;
+      description = ''
+        Port for p2pool to listen on.
+      '';
+    };
+
     chain = mkOption {
       type = types.enum [
         "main"
@@ -72,6 +96,13 @@ in
         ExecStart = "${pkgs.p2pool}/bin/p2pool ${p2pArgs}";
         Restart = "always";
       };
+    };
+
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [
+        cfg.rpc.port
+        cfg.zmq.port
+      ];
     };
   };
 }
