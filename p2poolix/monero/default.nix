@@ -58,16 +58,12 @@ in
     openFirewall = mkOption {
       type = types.bool;
       default = false;
-      description = ''
-        Open port in firewall for Monero RPC.
-      '';
+      description = "Open port in firewall for Monero RPC.";
     };
     zmq.port = mkOption {
       type = types.port;
       default = 18083;
-      description = ''
-        Port for ZeroMQ RPC needed when using p2pool.
-      '';
+      description = "Port for ZeroMQ RPC needed when using p2pool.";
     };
     limits.peers = {
       incoming = mkOption {

@@ -45,25 +45,19 @@ in
     openFirewall = mkOption {
       type = types.bool;
       default = false;
-      description = ''
-        Open ports in firewall for p2pool.
-      '';
+      description = "Open ports in firewall for p2pool.";
     };
 
     address = mkOption {
       type = types.str;
       default = "127.0.0.1";
-      description = ''
-        Address for p2pool to listen on.
-      '';
+      description = "Address for p2pool to listen on.";
     };
 
     port = mkOption {
       type = types.int;
       default = 3333;
-      description = ''
-        Port for p2pool to listen on.
-      '';
+      description = "Port for p2pool to listen on.";
     };
 
     chain = mkOption {
@@ -74,9 +68,7 @@ in
       ];
       default = "main";
       example = "mini";
-      description = ''
-        Desired p2pool chain to mine on.
-      '';
+      description = "Desired p2pool chain to mine on.";
     };
   };
 
