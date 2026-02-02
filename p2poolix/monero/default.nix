@@ -68,6 +68,20 @@ in
   ];
 
   options.p2poolix.monero = {
+    openFirewall = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Open port in firewall for Monero RPC.
+      '';
+    };
+    zmq.port = mkOption {
+      type = types.port;
+      default = 18083;
+      description = ''
+        Port for ZeroMQ RPC needed when using p2pool.
+      '';
+    };
     limits.peers = {
       incoming = mkOption {
         type = types.int;
@@ -88,45 +102,40 @@ in
         '';
       };
     };
-    zmq = {
-      address = mkOption {
-        type = types.str;
-        default = cfg.rpc.address;
-        description = ''
-          IP for ZMQ RPC server to listen on.
-          This is required by p2pool.
-        '';
-      };
-      port = mkOption {
-        type = types.port;
-        default = 18083;
-        description = ''
-          Port for ZMQ RPC server to listen on.
-          This is required by p2pool.
-        '';
-      };
-    };
   };
 
   config = mkIf cfg.enable {
-    services.monero.enable = true;
+    # TODO: assert monero.mining is disabled if xmrig is enabled
+    services.monero = {
+      enable = true;
 
-    # and in/out peers
+      priorityNodes = [
+        "p2pmd.xmrvsbeast.com:18080"
+        "nodes.hashvault.pro:18080"
+      ];
+    };
+
     services.monero.extraConfig = ''
       # Set connection limits as suggested by p2pool
       in-peers=${toString cfg.limits.peers.incoming}
       out-peers=${toString cfg.limits.peers.outgoing}
-
-      # Ensure a few good working nodes
-      add-priority-node=p2pmd.xmrvsbeast.com:18080
-      add-priority-node=nodes.hashvault.pro:18080
+    ''
+    + optionalString (cfg.rpc.address != "127.0.0.1") ''
+      confirm-external-bind=1
     ''
     + optionalString p2poolix.p2pool.enable ''
-      zmq-pub=tcp://${cfg.zmq.address}:${toString cfg.zmq.port}
+      zmq-pub=tcp://${cfg.rpc.address}:${toString cfg.zmq.port}
 
       # Combat selfish miners and bad nodes
       enforce-dns-checkpointing=1
       enable-dns-blocklist=1
     '';
+
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [
+        cfg.rpc.port
+        cfg.zmq.port
+      ];
+    };
   };
 }
