@@ -7,6 +7,7 @@
 let
   inherit (lib)
     cli
+    concatStringsSep
     mkIf
     mkOption
     optionalAttrs
@@ -92,7 +93,7 @@ in
         User = "p2pool";
         Group = "p2pool";
         # EnvironmentFile = lib.mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
-        ExecStart = "${pkgs.p2pool}/bin/p2pool ${p2pArgs}";
+        ExecStart = "${pkgs.p2pool}/bin/p2pool ${concatStringsSep " " p2pArgs}";
         Restart = "always";
       };
     };
