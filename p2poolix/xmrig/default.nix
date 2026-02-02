@@ -55,14 +55,14 @@ in
         };
       };
     };
-  };
 
-  # TODO: make sure 4 pages is enough
-  boot = mkIf cfg."1gb-hugepages" {
-    kernelParams = [
-      "hugepagesz=1G"
-      "hugepages=4"
-      "default_hugepagesz=2M"
-    ];
+    # TODO: make sure 4 pages is enough
+    boot = mkIf cfg."1gb-hugepages" {
+      kernelParams = [
+        "hugepagesz=1G"
+        "hugepages=4"
+        "default_hugepagesz=2M"
+      ];
+    };
   };
 }

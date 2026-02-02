@@ -9,29 +9,36 @@ let
     cli
     mkIf
     mkOption
+    optionalAttrs
     types
     ;
 
   cfg = config.p2poolix.p2pool;
   p2poolix = config.p2poolix;
+  tariCfg = config.p2poolix.tari;
   xmrAddress = p2poolix.monero.address;
 
   # P2Pool does not use a config file.
   # Specify configuration via CLI args.
   p2pArgs =
-    cli.toCommandLineShell
+    cli.toCommandLine
       (optionName: {
         option = "--${optionName}";
         sep = null;
         explicitBool = false;
       })
-      {
-        host = p2poolix.monero.rpc.address;
-        ${cfg.chain} = (cfg.chain != "main");
-        wallet = xmrAddress;
-        p2p = "${cfg.address}:${toString cfg.port}";
-      };
-  # optional --merge-mine tari/addr
+      (
+        {
+          host = p2poolix.monero.rpc.address;
+          ${cfg.chain} = (cfg.chain != "main");
+          wallet = xmrAddress;
+          p2p = "${cfg.address}:${toString cfg.port}";
+        }
+        // optionalAttrs tariCfg.enable {
+          "merge-mine" =
+            "tari://${tariCfg.grpc.address}:${toString tariCfg.grpc.port} ${tariCfg.walletAddress}";
+        }
+      );
 in
 {
   options.p2poolix.p2pool = {
