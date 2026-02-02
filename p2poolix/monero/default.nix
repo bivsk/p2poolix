@@ -5,9 +5,11 @@
 }:
 let
   inherit (lib)
-    mkAfter
     mkAliasOptionModule
     mkIf
+    mkOption
+    optionalString
+    types
     ;
 
   cfg = config.p2poolix.monero;
@@ -65,17 +67,66 @@ in
     )
   ];
 
+  options.p2poolix.monero = {
+    limits.peers = {
+      incoming = mkOption {
+        type = types.int;
+        default = 64;
+        description = ''
+          Maximum number of incoming connections to other nodes.
+          If your network connection's upload bandwidth is less than 10 Mbit,
+          use a value of 16 instead.
+        '';
+      };
+      outgoing = mkOption {
+        type = types.int;
+        default = 32;
+        description = ''
+          Maximum number of outgoing connections to other nodes.
+          If your network connection's upload bandwidth is less than 10 Mbit,
+          use a value of 8 instead.
+        '';
+      };
+    };
+    zmq = {
+      address = mkOption {
+        type = types.str;
+        default = cfg.rpc.address;
+        description = ''
+          IP for ZMQ RPC server to listen on.
+          This is required by p2pool.
+        '';
+      };
+      port = mkOption {
+        type = types.port;
+        default = 18083;
+        description = ''
+          Port for ZMQ RPC server to listen on.
+          This is required by p2pool.
+        '';
+      };
+    };
+  };
+
   config = mkIf cfg.enable {
     services.monero.enable = true;
 
-    # TODO: create option for p2pool ipaddr
     # and in/out peers
-    services.monero.extraConfig =
-      mkIf config.p2poolix.p2pool.enable
-        (mkAfter ''
-          zmq-pub=tcp://${cfg.rpc.address}:18083
-	  out-peers=12
-	  in-peers=48
-        '');
+    services.monero.extraConfig = ''
+      # Set connection limits as suggested by p2pool
+      in-peers=${toString cfg.limits.peers.incoming}
+      out-peers=${toString cfg.limits.peers.outgoing}
+
+      # Ensure a few good working nodes
+      add-priority-node=p2pmd.xmrvsbeast.com:18080
+      add-priority-node=nodes.hashvault.pro:18080
+    ''
+    + optionalString p2poolix.p2pool.enable ''
+      zmq-pub=tcp://${cfg.zmq.address}:${toString cfg.zmq.port}
+
+      # Combat selfish miners and bad nodes
+      enforce-dns-checkpointing=1
+      enable-dns-blocklist=1
+    '';
   };
 }
