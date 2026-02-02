@@ -62,6 +62,12 @@ in
       '';
     };
 
+    openFirewall = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Open port in firewall for Tari gRPC.";
+    };
+
     environmentFile = mkOption {
       type = types.nullOr types.path;
       default = null;
@@ -97,6 +103,13 @@ in
       wallet = {
         grpc_address = "/ip4/${cfg.walletGrpc.address}/tcp/${toString cfg.walletGrpc.port}";
       };
+    };
+
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [
+        cfg.grpc.port
+        cfg.walletGrpc.port
+      ];
     };
 
     users.users.tari = {
