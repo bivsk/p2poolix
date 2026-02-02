@@ -84,16 +84,35 @@ in
 
     users.groups.p2pool = { };
 
+    systemd.sockets.p2pool = {
+      description = "Command FIFO for p2pool daemon";
+      socketConfig = {
+        ListenFIFO = "/run/p2pool/p2pool.control";
+        DirectoryMode = "0755";
+        SocketMode = "0666";
+        SocketUser = "p2pool";
+        SocketGroup = "p2pool";
+        RemoveOnStop = true;
+      };
+    };
+
     systemd.services.p2pool = {
       description = "p2pool daemon";
-      after = [ "network.target" ];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
+      requires = [ "p2pool.socket" ];
 
       serviceConfig = {
         User = "p2pool";
         Group = "p2pool";
+        Sockets = [ "p2pool.socket" ];
+        StandardInput = "socket";
+        StandardOutput = "journal";
+        StandardError = "journal";
         # EnvironmentFile = lib.mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
         ExecStart = "${pkgs.p2pool}/bin/p2pool ${concatStringsSep " " p2pArgs}";
+        TimeoutStopSec = 60;
         Restart = "always";
       };
     };
