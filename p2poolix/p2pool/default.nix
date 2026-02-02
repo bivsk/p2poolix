@@ -33,7 +33,7 @@ let
           host = p2poolix.monero.rpc.address;
           ${cfg.chain} = (cfg.chain != "main");
           wallet = xmrAddress;
-          p2p = "${cfg.address}:${toString cfg.port}";
+          stratum = "${cfg.address}:${toString cfg.port}";
         }
         // optionalAttrs tariCfg.enable {
           "merge-mine" =
@@ -56,7 +56,7 @@ in
     };
 
     port = mkOption {
-      type = types.int;
+      type = types.port;
       default = 3333;
       description = "Port for p2pool to listen on.";
     };
