@@ -18,17 +18,18 @@ let
 
   # P2Pool does not use a config file.
   # Specify configuration via CLI args.
-  p2pArgs = cli.toCommandLineShell 
-  (optionName: {
-    option = "--${optionName}";
-    sep = null;
-    explicitBool = false;
-  })
-  {
-    host = p2poolix.monero.rpc.address;
-    ${cfg.chain} = (cfg.chain != "main");
-    wallet = xmrAddress;
-  };
+  p2pArgs =
+    cli.toCommandLineShell
+      (optionName: {
+        option = "--${optionName}";
+        sep = null;
+        explicitBool = false;
+      })
+      {
+        host = p2poolix.monero.rpc.address;
+        ${cfg.chain} = (cfg.chain != "main");
+        wallet = xmrAddress;
+      };
   # optional --merge-mine tari/addr
   # optional --host
 in
