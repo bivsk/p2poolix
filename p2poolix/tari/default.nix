@@ -13,16 +13,47 @@ let
     types
     ;
 
-  cfg = config.p2poolix.tari;
-  p2poolix = config.p2poolix;
-
   tariPkg = flakeSelf.packages.${pkgs.system}.tari;
 
+  cfg = config.p2poolix.tari;
+  p2poolix = config.p2poolix;
   configFormat = pkgs.formats.toml { };
   configFile = configFormat.generate "config.toml" cfg.settings;
 in
 {
   options.p2poolix.tari = {
+    grpc = {
+      address = mkOption {
+        type = types.str;
+        default = "127.0.0.1";
+        description = "gRPC address for Tari base node.";
+      };
+      port = mkOption {
+        type = types.port;
+        default = 18142;
+        description = "gRPC port for Tari base node.";
+      };
+    };
+
+    walletGrpc = {
+      address = mkOption {
+        type = types.str;
+        default = "127.0.0.1";
+        description = "gRPC address for Tari wallet.";
+      };
+      port = mkOption {
+        type = types.port;
+        default = 18143;
+        description = "gRPC port for Tari wallet.";
+      };
+    };
+
+    walletAddress = mkOption {
+      type = types.str;
+      default = "1259VHQPS6MovoWhqJuxZASf7BMtiVgqvM8RKBRm3zisLGmZEnKnmDRVyGZQt66bRdgtjoSiZUALk174iHu41aCyEGw";
+      description = "Tari address for mining rewards.";
+    };
+
     settings = mkOption {
       inherit (configFormat) type;
       default = { };
@@ -59,7 +90,13 @@ in
   config = mkIf p2poolix.tari.enable {
     p2poolix.tari.settings = {
       common.base_path = "/var/lib/tari";
-      base_node.grpc_address = mkDefault "/ip4/127.0.0.1/tcp/18142";
+      base_node = {
+        grpc_enabled = mkDefault true;
+        grpc_address = "/ip4/${cfg.grpc.address}/tcp/${toString cfg.grpc.port}";
+      };
+      wallet = {
+        grpc_address = "/ip4/${cfg.walletGrpc.address}/tcp/${toString cfg.walletGrpc.port}";
+      };
     };
 
     users.users.tari = {
@@ -80,8 +117,11 @@ in
       serviceConfig = {
         User = "tari";
         Group = "tari";
-        EnvironmentFile = mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
         ExecStart = "${tariPkg}/bin/minotari_node --base-path ${cfg.settings.common.base_path} --config ${configFile} --non-interactive-mode --network mainnet --disable-splash-screen";
+        EnvironmentFile = mkIf (cfg.environmentFile != null) [ cfg.environmentFile ];
+        Environment = [
+          "MINOTARI_NODE_ENABLE_MINING=${toString p2poolix.xmrig.enable}"
+        ];
         Restart = "always";
       };
     };
