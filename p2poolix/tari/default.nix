@@ -6,6 +6,7 @@ flakeSelf:
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) system;
   inherit (lib)
     mkDefault
     mkIf
@@ -13,7 +14,7 @@ let
     types
     ;
 
-  tariPkg = flakeSelf.packages.${pkgs.system}.tari;
+  tariPkg = flakeSelf.packages.${system}.tari;
 
   cfg = config.p2poolix.tari;
   p2poolix = config.p2poolix;
