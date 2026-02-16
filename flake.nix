@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+    hercules-ci-effects.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -48,5 +50,22 @@
       );
 
       formatter = forEachSupportedSystem ({ pkgs }: pkgs.nixfmt-tree);
+    }
+    // {
+      herculesCI = inputs.hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
+        hercules-ci.flake-update = {
+	  enable = true;
+	  baseMerge.enable = true;
+	  flakes.".".commitSummary = "chore: update flake.lock";
+	  pullRequestTitle = "chore: update flake.lock";
+	  autoMergeMethod = "squash";
+
+	  when = {
+	    hour = [ 0 ];
+	    dayOfWeek = [ "Sun" ];
+	  };
+	};
+	herculesCI.ciSystems = [ "x86_64-linux" ];
+      };
     };
 }
