@@ -54,18 +54,18 @@
     // {
       herculesCI = inputs.hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
         hercules-ci.flake-update = {
-	  enable = true;
-	  baseMerge.enable = true;
-	  flakes.".".commitSummary = "chore: update flake.lock";
-	  pullRequestTitle = "chore: update flake.lock";
-	  autoMergeMethod = "squash";
+          enable = true;
+          baseMerge.enable = true;
+          flakes.".".commitSummary = "chore: update flake.lock";
+          pullRequestTitle = "chore: update flake.lock";
+          autoMergeMethod = "squash";
 
-	  when = {
-	    hour = [ 0 ];
-	    dayOfWeek = [ "Sun" ];
-	  };
-	};
-	herculesCI.ciSystems = [ "x86_64-linux" ];
+          when = {
+            hour = [ 0 ];
+            dayOfWeek = [ "Sun" ];
+          };
+        };
+        herculesCI.ciSystems = [ "x86_64-linux" ];
       };
     };
 }
